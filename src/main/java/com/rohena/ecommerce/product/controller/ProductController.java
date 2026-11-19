@@ -1,7 +1,10 @@
+
 package com.rohena.ecommerce.product.controller;
 
-import com.rohena.ecommerce.product.entity.Product;
+import com.rohena.ecommerce.product.dto.ProductRequest;
+import com.rohena.ecommerce.product.dto.ProductResponse;
 import com.rohena.ecommerce.product.service.ProductService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,30 +22,37 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
+    public ProductResponse createProduct(
+            @RequestBody ProductRequest request) {
+
+        return productService.createProduct(request);
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<ProductResponse> getAllProducts() {
+
         return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
+    public ProductResponse getProductById(
+            @PathVariable Long id) {
+
         return productService.getProductById(id);
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(
+    public ProductResponse updateProduct(
             @PathVariable Long id,
-            @RequestBody Product product) {
-        return productService.updateProduct(id, product);
+            @RequestBody ProductRequest request) {
+
+        return productService.updateProduct(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable Long id) {
+
         productService.deleteProduct(id);
     }
 }
