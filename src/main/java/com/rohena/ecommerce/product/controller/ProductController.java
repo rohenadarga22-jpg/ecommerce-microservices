@@ -8,6 +8,7 @@ import com.rohena.ecommerce.product.service.ProductService;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,38 +24,38 @@ public class ProductController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse createProduct(
+    public ResponseEntity<ProductResponse> createProduct(
             @Valid @RequestBody ProductRequest request) {
-
-        return productService.createProduct(request);
+        return new ResponseEntity<>(
+                productService.createProduct(request),
+                HttpStatus.CREATED
+        );
     }
 
     @GetMapping
-    public List<ProductResponse> getAllProducts() {
-
-        return productService.getAllProducts();
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @GetMapping("/{id}")
-    public ProductResponse getProductById(
+    public ResponseEntity<ProductResponse> getProductById(
             @PathVariable Long id) {
-
-        return productService.getProductById(id);
+        return ResponseEntity.ok(productService.getProductById(id));
     }
 
     @PutMapping("/{id}")
-    public ProductResponse updateProduct(
+    public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody ProductRequest request) {
-
-        return productService.updateProduct(id, request);
+        return ResponseEntity.ok(
+                productService.updateProduct(id, request)
+        );
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteProduct(@PathVariable Long id) {
-
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable Long id) {
         productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }
