@@ -1,10 +1,15 @@
+
 package com.rohena.ecommerce.product.service;
 
+import com.rohena.ecommerce.product.dto.ProductRequest;
+import com.rohena.ecommerce.product.dto.ProductResponse;
 import com.rohena.ecommerce.product.entity.Product;
 import com.rohena.ecommerce.product.repository.ProductRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -15,34 +20,75 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public ProductResponse createProduct(ProductRequest request) {
+
+        Product product = new Product(
+                request.getName(),
+                request.getDescription(),
+                request.getPrice(),
+                request.getQuantity()
+        );
+
+        Product savedProduct = productRepository.save(product);
+
+        return convertToResponse(savedProduct);
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponse> getAllProducts() {
+
+        return productRepository.findAll()
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
+    public ProductResponse getProductById(Long id) {
+
+        Product product = productRepository.findById(id)
                 .orElseThrow(() ->
-                    new RuntimeException("Product not found with id: " + id));
+                        new RuntimeException(
+                                "Product not found with id: " + id));
+
+        return convertToResponse(product);
     }
 
-    public Product updateProduct(Long id, Product product) {
-        Product existingProduct = getProductById(id);
+    public ProductResponse updateProduct(
+            Long id, ProductRequest request) {
 
-        existingProduct.setName(product.getName());
-        existingProduct.setDescription(product.getDescription());
-        existingProduct.setPrice(product.getPrice());
-        existingProduct.setQuantity(product.getQuantity());
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Product not found with id: " + id));
 
-        return productRepository.save(existingProduct);
+        existingProduct.setName(request.getName());
+        existingProduct.setDescription(request.getDescription());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setQuantity(request.getQuantity());
+
+        Product updatedProduct =
+                productRepository.save(existingProduct);
+
+        return convertToResponse(updatedProduct);
     }
 
     public void deleteProduct(Long id) {
-        Product product = getProductById(id);
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Product not found with id: " + id));
+
         productRepository.delete(product);
     }
-}
 
+    private ProductResponse convertToResponse(Product product) {
+
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getQuantity()
+        );
+    }
+}
