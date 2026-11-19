@@ -5,6 +5,8 @@ import com.rohena.ecommerce.product.dto.ProductRequest;
 import com.rohena.ecommerce.product.dto.ProductResponse;
 import com.rohena.ecommerce.product.service.ProductService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponse createProduct(
-            @RequestBody ProductRequest request) {
+            @Valid @RequestBody ProductRequest request) {
 
         return productService.createProduct(request);
     }
@@ -44,7 +46,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public ProductResponse updateProduct(
             @PathVariable Long id,
-            @RequestBody ProductRequest request) {
+            @Valid @RequestBody ProductRequest request) {
 
         return productService.updateProduct(id, request);
     }
